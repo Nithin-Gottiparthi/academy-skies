@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Users, Globe, Award, BookOpen } from "lucide-react";
+import { ArrowRight, Users, Globe, Award, BookOpen, Plane, Shield, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/components/CourseCard";
 import { courses } from "@/data/courses";
-import heroBg from "@/assets/hero-bg.jpg";
 
 const stats = [
   { icon: Users, value: "25,000+", label: "Students Worldwide" },
@@ -13,43 +12,67 @@ const stats = [
   { icon: BookOpen, value: "50+", label: "Expert Courses" },
 ];
 
+const features = [
+  { icon: Plane, title: "Expert Instructors", desc: "Learn from airline captains and industry professionals with decades of experience." },
+  { icon: Shield, title: "Industry Certified", desc: "Earn certifications aligned with FAA, EASA, and ICAO international standards." },
+  { icon: Globe, title: "Study Anywhere", desc: "Access courses from anywhere in the world with multi-currency support." },
+  { icon: Headphones, title: "24/7 Support", desc: "Get help anytime with our dedicated student support team." },
+];
+
 const Index = () => {
   const featured = courses.slice(0, 3);
 
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroBg})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/40" />
-        <div className="container relative mx-auto px-4 py-24 md:py-32">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0 gradient-hero" />
+        {/* Decorative flight paths */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 right-10 w-96 h-96 rounded-full border border-white/5 animate-pulse" />
+          <div className="absolute bottom-20 left-10 w-64 h-64 rounded-full border border-white/5" />
+          <motion.div
+            animate={{ x: [0, 800], y: [0, -200], opacity: [0, 1, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            className="absolute top-1/3 left-0"
+          >
+            <Plane className="h-6 w-6 text-primary/40 rotate-45" />
+          </motion.div>
+        </div>
+        
+        <div className="container relative mx-auto px-4 pt-24 pb-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="max-w-2xl"
+            className="max-w-3xl"
           >
-            <span className="mb-4 inline-block rounded-full bg-accent/20 px-4 py-1.5 text-sm font-semibold text-accent">
-              ✈ Global Aviation Training
-            </span>
-            <h1 className="mb-6 font-display text-4xl font-extrabold leading-tight text-primary-foreground md:text-6xl">
-              Elevate Your Aviation Career
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/20 px-4 py-1.5 text-sm font-semibold text-primary"
+            >
+              <Plane className="h-4 w-4" />
+              Global Aviation Training Platform
+            </motion.span>
+            <h1 className="mb-6 font-display text-5xl font-extrabold leading-tight text-white md:text-7xl">
+              Elevate Your{" "}
+              <span className="text-primary">Aviation</span>{" "}
+              Career
             </h1>
-            <p className="mb-8 text-lg text-primary-foreground/80 md:text-xl">
+            <p className="mb-8 text-lg text-white/70 md:text-xl max-w-2xl">
               World-class pilot training and aviation courses. Study online from anywhere, earn
               industry-recognized certifications, and take your career to new heights.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/courses">
-                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
+                <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8">
                   Browse Courses <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/about">
-                <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+                <Button size="lg" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10 px-8">
                   Learn More
                 </Button>
               </Link>
@@ -59,31 +82,34 @@ const Index = () => {
       </section>
 
       {/* Stats */}
-      <section className="border-b border-border bg-card">
-        <div className="container mx-auto grid grid-cols-2 gap-6 px-4 py-10 md:grid-cols-4">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              className="text-center"
-            >
-              <stat.icon className="mx-auto mb-2 h-6 w-6 text-secondary" />
-              <p className="text-2xl font-bold text-foreground md:text-3xl">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </motion.div>
-          ))}
+      <section className="relative -mt-16 z-10">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.1 }}
+                className="rounded-2xl bg-card p-6 shadow-float text-center"
+              >
+                <stat.icon className="mx-auto mb-2 h-6 w-6 text-primary" />
+                <p className="text-2xl font-bold text-foreground md:text-3xl font-display">{stat.value}</p>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Featured Courses */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-4 py-20">
         <div className="mb-10 text-center">
-          <h2 className="mb-3 font-display text-3xl font-bold text-foreground">
+          <span className="mb-2 inline-block text-sm font-semibold uppercase tracking-wider text-primary">Our Programs</span>
+          <h2 className="mb-3 font-display text-3xl font-bold text-foreground md:text-4xl">
             Featured Courses
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground max-w-xl mx-auto">
             Start your journey with our most popular aviation training programs.
           </p>
         </div>
@@ -94,25 +120,58 @@ const Index = () => {
         </div>
         <div className="mt-10 text-center">
           <Link to="/courses">
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" className="rounded-full px-8">
               View All Courses <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="gradient-hero py-16 text-center">
+      {/* Features */}
+      <section className="bg-muted py-20">
         <div className="container mx-auto px-4">
-          <h2 className="mb-4 font-display text-3xl font-bold text-primary-foreground">
+          <div className="mb-10 text-center">
+            <span className="mb-2 inline-block text-sm font-semibold uppercase tracking-wider text-primary">Why Choose Us</span>
+            <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">The Academy Aviation Advantage</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="rounded-2xl bg-card p-6 shadow-card hover:shadow-card-hover transition-shadow"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <f.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="mb-2 font-display font-bold text-foreground">{f.title}</h3>
+                <p className="text-sm text-muted-foreground">{f.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="gradient-hero py-20 text-center relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 right-20 w-40 h-40 rounded-full border border-white/5" />
+          <div className="absolute bottom-10 left-20 w-60 h-60 rounded-full border border-white/5" />
+        </div>
+        <div className="container relative mx-auto px-4">
+          <Plane className="mx-auto mb-4 h-10 w-10 text-primary" />
+          <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">
             Ready to Start Your Aviation Journey?
           </h2>
-          <p className="mb-8 text-primary-foreground/80">
+          <p className="mb-8 text-white/60 max-w-lg mx-auto">
             Join thousands of pilots and aviation professionals training with Academy Aviation Online.
           </p>
           <Link to="/courses">
-            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
-              Get Started Today
+            <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8">
+              Get Started Today <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
