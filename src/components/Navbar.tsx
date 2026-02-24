@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X, Globe } from "lucide-react";
-import { useState } from "react";
+import { ShoppingCart, Menu, X, Globe, Plane } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { currencies } from "@/data/currencies";
@@ -12,12 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { items } = useCart();
   const { currency, setCurrency } = useCurrency();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const links = [
     { to: "/", label: "Home" },
@@ -26,26 +34,28 @@ const Navbar = () => {
     { to: "/contact", label: "Contact" },
   ];
 
+  const isHome = location.pathname === "/";
+  const navBg = scrolled || !isHome
+    ? "bg-secondary/95 backdrop-blur-md shadow-float"
+    : "bg-transparent";
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <nav className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl rounded-full transition-all duration-300 ${navBg}`}>
+      <div className="flex h-14 items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <span className="text-lg font-bold text-primary-foreground">A</span>
-          </div>
-          <span className="font-display text-lg font-bold text-foreground">
-            Academy Aviation
-          </span>
+          <img src={logo} alt="Academy Aviation Online" className="h-8 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === link.to ? "text-primary" : "text-muted-foreground"
+              className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-full ${
+                location.pathname === link.to
+                  ? "bg-primary text-primary-foreground"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               {link.label}
@@ -53,10 +63,10 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="hidden sm:block">
             <Select value={currency.code} onValueChange={(v) => setCurrency(currencies.find((c) => c.code === v)!)}>
-              <SelectTrigger className="h-9 w-28 text-xs">
+              <SelectTrigger className="h-8 w-24 rounded-full border-white/20 bg-white/10 text-xs text-white">
                 <Globe className="mr-1 h-3 w-3" />
                 <SelectValue />
               </SelectTrigger>
@@ -71,10 +81,10 @@ const Navbar = () => {
           </div>
 
           <Link to="/cart">
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/10 rounded-full h-9 w-9">
+              <ShoppingCart className="h-4 w-4" />
               {items.length > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {items.length}
                 </span>
               )}
@@ -82,47 +92,53 @@ const Navbar = () => {
           </Link>
 
           <Link to="/admin" className="hidden md:block">
-            <Button variant="outline" size="sm">
-              Admin
+            <Button size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8 px-4">
+              <Plane className="mr-1 h-3 w-3" /> Admin
             </Button>
           </Link>
 
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10 rounded-full h-9 w-9" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="border-t border-border bg-card px-4 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
+        <div className="mx-4 mb-4 mt-1 rounded-2xl bg-secondary/95 backdrop-blur-md px-4 py-4 md:hidden">
+          <div className="flex flex-col gap-1">
             {links.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
                 onClick={() => setMobileOpen(false)}
-                className="text-sm font-medium text-muted-foreground hover:text-primary"
+                className={`rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                  location.pathname === link.to
+                    ? "bg-primary text-primary-foreground"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
               >
                 {link.label}
               </Link>
             ))}
-            <Link to="/admin" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-primary">
+            <Link to="/admin" onClick={() => setMobileOpen(false)} className="rounded-lg px-4 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10">
               Admin Portal
             </Link>
-            <Select value={currency.code} onValueChange={(v) => setCurrency(currencies.find((c) => c.code === v)!)}>
-              <SelectTrigger className="h-9 w-full text-xs">
-                <Globe className="mr-1 h-3 w-3" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {currencies.map((c) => (
-                  <SelectItem key={c.code} value={c.code}>
-                    {c.symbol} {c.code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="mt-2 pt-2 border-t border-white/10">
+              <Select value={currency.code} onValueChange={(v) => setCurrency(currencies.find((c) => c.code === v)!)}>
+                <SelectTrigger className="h-9 w-full rounded-lg border-white/20 bg-white/10 text-xs text-white">
+                  <Globe className="mr-1 h-3 w-3" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.symbol} {c.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       )}
