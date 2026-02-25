@@ -14,16 +14,238 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_submissions: {
+        Row: {
+          course_interest: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          read: boolean
+        }
+        Insert: {
+          course_interest?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          read?: boolean
+        }
+        Update: {
+          course_interest?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          read?: boolean
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          assessment: string
+          category: string
+          certification: string
+          created_at: string
+          description: string
+          duration: string
+          enrollment_count: number
+          faqs: Json
+          features: string[]
+          id: string
+          image_url: string | null
+          instructor: string
+          learning_objectives: string[]
+          lessons: number
+          level: string
+          modules: Json
+          overview: string
+          price_usd: number
+          published: boolean
+          rating: number
+          review_count: number
+          reviews: Json
+          short_description: string
+          slug: string
+          title: string
+          updated_at: string
+          who_should_attend: string[]
+        }
+        Insert: {
+          assessment?: string
+          category?: string
+          certification?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          enrollment_count?: number
+          faqs?: Json
+          features?: string[]
+          id?: string
+          image_url?: string | null
+          instructor?: string
+          learning_objectives?: string[]
+          lessons?: number
+          level?: string
+          modules?: Json
+          overview?: string
+          price_usd?: number
+          published?: boolean
+          rating?: number
+          review_count?: number
+          reviews?: Json
+          short_description?: string
+          slug: string
+          title: string
+          updated_at?: string
+          who_should_attend?: string[]
+        }
+        Update: {
+          assessment?: string
+          category?: string
+          certification?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          enrollment_count?: number
+          faqs?: Json
+          features?: string[]
+          id?: string
+          image_url?: string | null
+          instructor?: string
+          learning_objectives?: string[]
+          lessons?: number
+          level?: string
+          modules?: Json
+          overview?: string
+          price_usd?: number
+          published?: boolean
+          rating?: number
+          review_count?: number
+          reviews?: Json
+          short_description?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+          who_should_attend?: string[]
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          content: Json
+          id: string
+          page: string
+          section: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          id?: string
+          page: string
+          section: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          id?: string
+          page?: string
+          section?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +372,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
