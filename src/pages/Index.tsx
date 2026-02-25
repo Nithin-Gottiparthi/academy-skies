@@ -4,6 +4,24 @@ import { ArrowRight, Users, Globe, Award, BookOpen, Plane, Shield, Headphones } 
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/components/CourseCard";
 import { courses } from "@/data/courses";
+import { useEffect, useState } from "react";
+import heroImage from "@/assets/hero.jpg";
+
+const TypingText = ({ text, speed = 150 }: { text: string; speed?: number }) => {
+  const [displayed, setDisplayed] = useState("");
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayed(text.slice(0, i + 1));
+      i++;
+      if (i === text.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return <span className="text-primary block">{displayed}<span className="border-r-2 border-primary animate-blink ml-1"></span></span>;
+};
 
 const stats = [
   { icon: Users, value: "25,000+", label: "Students Worldwide" },
@@ -26,20 +44,38 @@ const Index = () => {
     <>
       {/* Hero */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 gradient-hero" />
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        {/* Optional dark overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/50" />
+
         {/* Decorative flight paths */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 right-10 w-96 h-96 rounded-full border border-white/5 animate-pulse" />
           <div className="absolute bottom-20 left-10 w-64 h-64 rounded-full border border-white/5" />
           <motion.div
-            animate={{ x: [0, 800], y: [0, -200], opacity: [0, 1, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            initial={{ x: 0, y: 0, rotate: 0, opacity: 0.5, scale: 0.8 }}
+            animate={{
+              x: [0, 300, 600, 900],           // horizontal movement
+              y: [0, -50, 50, -20],            // vertical bobbing path
+              rotate: [0, 15, -10, 0],          // slight rotation to simulate turning
+              opacity: [0.5, 1, 0.8, 0.5],     // fade in and out
+              scale: [0.8, 1, 0.9, 0.8]        // subtle scaling like perspective
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
             className="absolute top-1/3 left-0"
           >
-            <Plane className="h-6 w-6 text-primary/40 rotate-45" />
+            <Plane className="h-6 w-6 text-primary/70" />
           </motion.div>
         </div>
-        
+
         <div className="container relative mx-auto px-4 pt-24 pb-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -57,13 +93,11 @@ const Index = () => {
               Global Aviation Training Platform
             </motion.span>
             <h1 className="mb-6 font-display text-5xl font-extrabold leading-tight text-white md:text-7xl">
-              Elevate Your{" "}
-              <span className="text-primary">Aviation</span>{" "}
-              Career
+              Your Gateway <br />
+              <TypingText text="To Aviation" /> Knowledge
             </h1>
             <p className="mb-8 text-lg text-white/70 md:text-xl max-w-2xl">
-              World-class pilot training and aviation courses. Study online from anywhere, earn
-              industry-recognized certifications, and take your career to new heights.
+              Learn from industry experts, enhance your skills, and explore new career opportunities in aviation.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/courses">
@@ -72,7 +106,10 @@ const Index = () => {
                 </Button>
               </Link>
               <Link to="/about">
-                <Button size="lg" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10 px-8">
+                <Button
+                  size="lg"
+                  className="rounded-full border border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white px-8"
+                >
                   Learn More
                 </Button>
               </Link>
