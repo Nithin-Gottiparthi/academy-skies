@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Users, Globe, Award, BookOpen, Plane, Shield, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/components/CourseCard";
-import { courses } from "@/data/courses";
+import { useCourses } from "@/hooks/useCourses";
 import { useEffect, useState } from "react";
 import heroImage from "@/assets/hero.jpg";
 
@@ -38,38 +38,32 @@ const features = [
 ];
 
 const Index = () => {
+  const { data: courses = [] } = useCourses(true);
   const featured = courses.slice(0, 3);
 
   return (
     <>
       {/* Hero */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        {/* Optional dark overlay for better text contrast */}
         <div className="absolute inset-0 bg-black/50" />
 
-        {/* Decorative flight paths */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 right-10 w-96 h-96 rounded-full border border-white/5 animate-pulse" />
           <div className="absolute bottom-20 left-10 w-64 h-64 rounded-full border border-white/5" />
           <motion.div
             initial={{ x: 0, y: 0, rotate: 0, opacity: 0.5, scale: 0.8 }}
             animate={{
-              x: [0, 300, 600, 900],           // horizontal movement
-              y: [0, -50, 50, -20],            // vertical bobbing path
-              rotate: [0, 15, -10, 0],          // slight rotation to simulate turning
-              opacity: [0.5, 1, 0.8, 0.5],     // fade in and out
-              scale: [0.8, 1, 0.9, 0.8]        // subtle scaling like perspective
+              x: [0, 300, 600, 900],
+              y: [0, -50, 50, -20],
+              rotate: [0, 15, -10, 0],
+              opacity: [0.5, 1, 0.8, 0.5],
+              scale: [0.8, 1, 0.9, 0.8]
             }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             className="absolute top-1/3 left-0"
           >
             <Plane className="h-6 w-6 text-primary/70" />

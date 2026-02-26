@@ -3,17 +3,18 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/components/CourseCard";
-import { courses, categories } from "@/data/courses";
+import { useCourses, categories } from "@/hooks/useCourses";
 
 const Courses = () => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const { data: courses = [], isLoading } = useCourses(true);
 
   const filtered = courses.filter((c) => {
     const matchSearch = c.title.toLowerCase().includes(search.toLowerCase()) ||
-      c.shortDescription.toLowerCase().includes(search.toLowerCase());
+      c.short_description.toLowerCase().includes(search.toLowerCase());
     const matchCategory = !activeCategory || c.category === activeCategory;
-    return matchSearch && matchCategory && c.published;
+    return matchSearch && matchCategory;
   });
 
   return (
@@ -37,6 +38,7 @@ const Courses = () => {
           <Button
             variant={!activeCategory ? "default" : "outline"}
             size="sm"
+            className="rounded-full"
             onClick={() => setActiveCategory(null)}
           >
             All
@@ -46,6 +48,7 @@ const Courses = () => {
               key={cat}
               variant={activeCategory === cat ? "default" : "outline"}
               size="sm"
+              className="rounded-full"
               onClick={() => setActiveCategory(cat)}
             >
               {cat}
@@ -54,7 +57,12 @@ const Courses = () => {
         </div>
       </div>
 
-      {filtered.length > 0 ? (
+      {isLoading ? (
+        <div className="py-20 text-center text-muted-foreground">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mb-4" />
+          Loading courses...
+        </div>
+      ) : filtered.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((course) => (
             <CourseCard key={course.id} course={course} />

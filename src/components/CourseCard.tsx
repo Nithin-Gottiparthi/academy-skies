@@ -1,21 +1,30 @@
 import { Link } from "react-router-dom";
 import { Star, Clock, BookOpen, Plane } from "lucide-react";
-import { Course } from "@/data/courses";
+import { DbCourse } from "@/hooks/useCourses";
 import { convertPrice } from "@/data/currencies";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const CourseCard = ({ course }: { course: Course }) => {
+const CourseCard = ({ course }: { course: DbCourse }) => {
   const { currency } = useCurrency();
   const { addItem, isInCart } = useCart();
 
-  const levelColor = {
+  const levelColor: Record<string, string> = {
     Beginner: "bg-success/10 text-success",
     Intermediate: "bg-primary/10 text-primary",
     Advanced: "bg-secondary/20 text-secondary-foreground",
-  }[course.level];
+  };
+
+  const cartItem = {
+    id: course.id,
+    title: course.title,
+    slug: course.slug,
+    priceUSD: course.price_usd,
+    instructor: course.instructor,
+    duration: course.duration,
+  };
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
@@ -27,7 +36,7 @@ const CourseCard = ({ course }: { course: Course }) => {
               {course.title}
             </span>
           </div>
-          <Badge className={`absolute left-3 top-3 ${levelColor} border-0 rounded-full`}>
+          <Badge className={`absolute left-3 top-3 ${levelColor[course.level] || ""} border-0 rounded-full`}>
             {course.level}
           </Badge>
         </div>
@@ -43,14 +52,14 @@ const CourseCard = ({ course }: { course: Course }) => {
           </h3>
         </Link>
         <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
-          {course.shortDescription}
+          {course.short_description}
         </p>
 
         <div className="mt-auto">
           <div className="mb-3 flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Star className="h-3.5 w-3.5 fill-primary text-primary" />
-              {course.rating} ({course.reviewCount.toLocaleString()})
+              {course.rating} ({course.review_count.toLocaleString()})
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" /> {course.duration}
@@ -62,13 +71,13 @@ const CourseCard = ({ course }: { course: Course }) => {
 
           <div className="flex items-center justify-between">
             <span className="text-xl font-bold text-foreground font-display">
-              {convertPrice(course.priceUSD, currency)}
+              {convertPrice(course.price_usd, currency)}
             </span>
             <Button
               size="sm"
               className="rounded-full"
               variant={isInCart(course.id) ? "outline" : "default"}
-              onClick={() => addItem(course)}
+              onClick={() => addItem(cartItem)}
               disabled={isInCart(course.id)}
             >
               {isInCart(course.id) ? "In Cart" : "Add to Cart"}

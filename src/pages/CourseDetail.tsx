@@ -1,13 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, Clock, BookOpen, Users, CheckCircle, ArrowLeft, Plane, Award, MessageSquare, ChevronDown, Shield } from "lucide-react";
+import { Star, Clock, BookOpen, Users, CheckCircle, ArrowLeft, Plane, Award, MessageSquare, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { courses } from "@/data/courses";
 import { convertPrice } from "@/data/currencies";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useCart } from "@/contexts/CartContext";
+import { useCourseBySlug } from "@/hooks/useCourses";
 import { useState } from "react";
 
 const moduleColors = [
@@ -26,7 +26,16 @@ const CourseDetail = () => {
   const { currency } = useCurrency();
   const { addItem, isInCart } = useCart();
   const [activeSection, setActiveSection] = useState("overview");
-  const course = courses.find((c) => c.slug === slug);
+  const { data: course, isLoading } = useCourseBySlug(slug);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-32 text-center">
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mb-4" />
+        <p className="text-muted-foreground">Loading course...</p>
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -38,6 +47,15 @@ const CourseDetail = () => {
     );
   }
 
+  const cartItem = {
+    id: course.id,
+    title: course.title,
+    slug: course.slug,
+    priceUSD: course.price_usd,
+    instructor: course.instructor,
+    duration: course.duration,
+  };
+
   const sections = [
     { id: "overview", label: "Overview" },
     { id: "objectives", label: "Objectives" },
@@ -47,6 +65,10 @@ const CourseDetail = () => {
     { id: "faq", label: "FAQ" },
     { id: "reviews", label: "Reviews" },
   ];
+
+  const modules = (course.modules || []) as { title: string; description: string; imageKeyword: string }[];
+  const faqs = (course.faqs || []) as { question: string; answer: string }[];
+  const reviews = (course.reviews || []) as { name: string; role: string; rating: number; comment: string }[];
 
   return (
     <>
@@ -69,9 +91,9 @@ const CourseDetail = () => {
               <p className="mb-6 text-white/70 text-lg">{course.description}</p>
               <div className="flex flex-wrap items-center gap-4 text-sm text-white/60">
                 <span className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-primary text-primary" /> {course.rating} ({course.reviewCount.toLocaleString()} reviews)
+                  <Star className="h-4 w-4 fill-primary text-primary" /> {course.rating} ({course.review_count.toLocaleString()} reviews)
                 </span>
-                <span className="flex items-center gap-1"><Users className="h-4 w-4" /> {course.enrollmentCount.toLocaleString()} students</span>
+                <span className="flex items-center gap-1"><Users className="h-4 w-4" /> {course.enrollment_count.toLocaleString()} students</span>
                 <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {course.duration}</span>
                 <span className="flex items-center gap-1"><BookOpen className="h-4 w-4" /> {course.lessons} lessons</span>
               </div>
@@ -85,11 +107,11 @@ const CourseDetail = () => {
               className="rounded-2xl bg-card p-6 text-card-foreground shadow-float"
             >
               <p className="mb-1 text-sm text-muted-foreground">Price</p>
-              <p className="mb-4 text-3xl font-bold font-display">{convertPrice(course.priceUSD, currency)}</p>
+              <p className="mb-4 text-3xl font-bold font-display">{convertPrice(course.price_usd, currency)}</p>
               <Button
                 className="mb-3 w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
                 size="lg"
-                onClick={() => addItem(course)}
+                onClick={() => addItem(cartItem)}
                 disabled={isInCart(course.id)}
               >
                 {isInCart(course.id) ? "Already in Cart" : "Enroll Now"}
@@ -154,7 +176,7 @@ const CourseDetail = () => {
             <h2 className="font-display text-2xl font-bold text-foreground">Learning Objectives</h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            {course.learningObjectives.map((obj, i) => (
+            {course.learning_objectives.map((obj, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -10 }}
@@ -181,7 +203,7 @@ const CourseDetail = () => {
             <h2 className="font-display text-2xl font-bold text-foreground">Course Modules</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {course.modules.map((mod, i) => (
+            {modules.map((mod, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -216,7 +238,7 @@ const CourseDetail = () => {
             <h2 className="font-display text-2xl font-bold text-foreground">Who Should Attend?</h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            {course.whoShouldAttend.map((item, i) => (
+            {course.who_should_attend.map((item, i) => (
               <div key={i} className="flex items-center gap-3 rounded-xl bg-muted p-5">
                 <Plane className="h-5 w-5 text-primary shrink-0" />
                 <p className="text-foreground">{item}</p>
@@ -259,7 +281,7 @@ const CourseDetail = () => {
           </div>
           <div className="rounded-2xl border border-border bg-card overflow-hidden">
             <Accordion type="single" collapsible>
-              {course.faqs.map((faq, i) => (
+              {faqs.map((faq, i) => (
                 <AccordionItem key={i} value={`faq-${i}`}>
                   <AccordionTrigger className="px-6 text-left font-display font-semibold text-foreground hover:text-primary">
                     {faq.question}
@@ -282,7 +304,7 @@ const CourseDetail = () => {
             <h2 className="font-display text-2xl font-bold text-foreground">Student Reviews</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            {course.reviews.map((review, i) => (
+            {reviews.map((review, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
