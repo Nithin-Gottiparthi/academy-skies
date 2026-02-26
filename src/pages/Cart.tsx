@@ -17,7 +17,7 @@ const Cart = () => {
         <CartIcon className="mb-4 h-16 w-16 text-muted-foreground/40" />
         <h1 className="mb-2 font-display text-2xl font-bold">Your Cart is Empty</h1>
         <p className="mb-6 text-muted-foreground">Browse our courses and add them to your cart.</p>
-        <Link to="/courses"><Button>Browse Courses</Button></Link>
+        <Link to="/courses"><Button className="rounded-full">Browse Courses</Button></Link>
       </div>
     );
   }
@@ -30,7 +30,7 @@ const Cart = () => {
           {items.map((item) => (
             <div key={item.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4 shadow-card">
               <div className="flex-1">
-                <Link to={`/courses/${item.slug}`} className="font-display font-bold text-foreground hover:text-secondary">
+                <Link to={`/courses/${item.slug}`} className="font-display font-bold text-foreground hover:text-primary">
                   {item.title}
                 </Link>
                 <p className="text-sm text-muted-foreground">{item.instructor} · {item.duration}</p>
@@ -56,7 +56,7 @@ const Cart = () => {
             <span>Total</span>
             <span>{convertPrice(total, currency)}</span>
           </div>
-          <Button className="mb-3 w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold" size="lg">
+          <Button className="mb-3 w-full rounded-full font-semibold" size="lg">
             Proceed to Checkout
           </Button>
           <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={clearCart}>

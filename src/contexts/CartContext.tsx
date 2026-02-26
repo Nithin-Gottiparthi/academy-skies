@@ -1,9 +1,17 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Course } from "@/data/courses";
+
+interface CartItem {
+  id: string;
+  title: string;
+  slug: string;
+  priceUSD: number;
+  instructor: string;
+  duration: string;
+}
 
 interface CartContextType {
-  items: Course[];
-  addItem: (course: Course) => void;
+  items: CartItem[];
+  addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
   isInCart: (id: string) => boolean;
@@ -19,11 +27,13 @@ const CartContext = createContext<CartContextType>({
 
 export const useCart = () => useContext(CartContext);
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<Course[]>([]);
+export type { CartItem };
 
-  const addItem = (course: Course) => {
-    setItems((prev) => (prev.find((i) => i.id === course.id) ? prev : [...prev, course]));
+export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  const addItem = (item: CartItem) => {
+    setItems((prev) => (prev.find((i) => i.id === item.id) ? prev : [...prev, item]));
   };
 
   const removeItem = (id: string) => {
