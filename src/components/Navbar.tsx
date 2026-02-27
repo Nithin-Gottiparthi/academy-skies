@@ -121,7 +121,7 @@ const Navbar = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden lg:flex items-center gap-2">
-            <Link to="/admin">
+            <Link to="/admin/login">
               <Button size="sm" className="rounded-full h-8 px-4 text-xs">
                 <Plane className="mr-1 h-3 w-3" /> Admin
               </Button>
@@ -173,7 +173,7 @@ const Navbar = () => {
               ))}
 
               <div className="border-t border-white/10 pt-3 mt-2 flex flex-col gap-2">
-                <Link to="/admin">
+                <Link to="/admin/login">
                   <Button className="w-full rounded-lg text-sm">Admin Portal</Button>
                 </Link>
 

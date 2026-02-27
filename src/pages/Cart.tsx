@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { Trash2, ShoppingCart as CartIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { convertPrice } from "@/data/currencies";
@@ -8,8 +11,31 @@ import { convertPrice } from "@/data/currencies";
 const Cart = () => {
   const { items, removeItem, clearCart } = useCart();
   const { currency } = useCurrency();
+  const [checkingOut, setCheckingOut] = useState(false);
 
   const total = items.reduce((sum, item) => sum + item.priceUSD, 0);
+
+  const handleCheckout = async () => {
+    setCheckingOut(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: {
+          items: items.map((item) => ({
+            title: item.title,
+            priceUSD: item.priceUSD,
+          })),
+        },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Checkout failed");
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -56,8 +82,13 @@ const Cart = () => {
             <span>Total</span>
             <span>{convertPrice(total, currency)}</span>
           </div>
-          <Button className="mb-3 w-full rounded-full font-semibold" size="lg">
-            Proceed to Checkout
+          <Button
+            className="mb-3 w-full rounded-full font-semibold"
+            size="lg"
+            onClick={handleCheckout}
+            disabled={checkingOut}
+          >
+            {checkingOut ? "Processing..." : "Proceed to Checkout"}
           </Button>
           <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={clearCart}>
             Clear Cart
